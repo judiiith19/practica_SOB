@@ -13,6 +13,7 @@ import model.entities.Article;
 import model.entities.Customer;
 
 import java.util.List;
+import model.entities.Link;
 
 /**
  *
@@ -45,7 +46,9 @@ public class CustomerFacadeREST extends AbstractFacade{
                         .stream()
                         .max((a1, a2) -> a1.getPublishedDate().compareTo(a2.getPublishedDate()))
                         .orElse(null);
-                customer.getLinks().add("/api/v1/article/" + (lastArticle != null ? lastArticle.getId() : ""));
+                Link link = new Link();
+                link.setLink("/api/v1/article/" + (lastArticle != null ? lastArticle.getId() : ""));
+                customer.getLinks().add(link);
             }
             customer.setPassword(null);
         });
