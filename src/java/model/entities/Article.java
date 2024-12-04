@@ -10,7 +10,6 @@ import jakarta.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  *
@@ -54,7 +53,7 @@ public class Article {
     private List<Topic> topics = new ArrayList<>();
 
     @ManyToOne(optional = false)
-    private User author;
+    private Customer author;
     
     //Getters i Setters
 
@@ -85,8 +84,8 @@ public class Article {
     public List<Topic> getTopics() { return topics; }
     public void setTopics(List<Topic> topics) { this.topics = topics; }
 
-    public User getAuthor() { return author; }
-    public void setAuthor(User author) { this.author = author; }
+    public Customer getAuthor() { return author; }
+    public void setAuthor(Customer author) { this.author = author; }
     
     //equals, hashCode i toString
 

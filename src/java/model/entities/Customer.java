@@ -15,12 +15,12 @@ import java.util.List;
  * @author JUDITH
  */
 @Entity
-@Table(name = "USER")
+@Table(name = "CUSTOMER")
 @XmlRootElement
-public class User implements Serializable{
+public class Customer implements Serializable{
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "User_Gen")
-    @SequenceGenerator(name = "User_Gen", sequenceName = "USER_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Customer_Gen")
+    @SequenceGenerator(name = "Customer_Gen", sequenceName = "CUSTOMER_SEQ", allocationSize = 1)
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -61,10 +61,10 @@ public class User implements Serializable{
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof User)) {
+        if (!(object instanceof Customer)) {
             return false;
         }
-        User other = (User) object;
+        Customer other = (Customer) object;
         return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 

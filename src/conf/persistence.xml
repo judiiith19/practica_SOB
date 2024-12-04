@@ -3,7 +3,7 @@
   <persistence-unit name="Homework1PU" transaction-type="JTA">
     <jta-data-source>java:app/jdbc/homework1</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
-    <class>model.entities.User</class>
+    <class>model.entities.Customer</class>
     <class>model.entities.Article</class>
     <properties>
         <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
