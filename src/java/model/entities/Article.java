@@ -23,25 +23,27 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Article_Gen")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "TITLE", nullable = false)
     private String title;
 
-    @Column(nullable = false, length = 500)
+    @Column(name = "CONTENT", nullable = false, length = 500, columnDefinition = "VARCHAR(500)")
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "SUMMARY", nullable = false, length = 20, columnDefinition = "VARCHAR(20)")
     private String summary;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "PUBLISHED_DATE", columnDefinition = "TIMESTAMP")
     private Date publishedDate;
     
-    @Column(nullable = false)
+    @Column(name = "VIEWS", nullable = false, columnDefinition = "INTEGER")
     private Integer views;
     
-    @Column(nullable = false)
+    @Column(name ="IMAGE_URL", nullable = false, columnDefinition = "VARCHAR(255)")
     @Pattern(regexp = "^(http|https)://.*$", message = "Not valid URL")
     private String imageUrl;
 
+    @Column(name = "IS_PUBLIC", columnDefinition = "BOOLEAN")
     private Boolean isPublic;
 
     @ManyToMany
@@ -53,6 +55,7 @@ public class Article {
     private List<Topic> topics = new ArrayList<>();
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "AUTHOR_ID", nullable = false)
     private Customer author;
     
     //Getters i Setters
