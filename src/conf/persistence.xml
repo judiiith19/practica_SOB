@@ -5,6 +5,7 @@
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <class>model.entities.Customer</class>
     <class>model.entities.Article</class>
+    <class>model.entities.Topic</class>
     <properties>
         <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
     </properties>
