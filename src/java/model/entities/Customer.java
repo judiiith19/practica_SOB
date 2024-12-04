@@ -30,6 +30,8 @@ public class Customer implements Serializable{
     private String password;
 
     private Boolean isAuthor;
+    
+    private List<String> links = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Article> articles = new ArrayList<>();
@@ -48,6 +50,9 @@ public class Customer implements Serializable{
     public Boolean getIsAuthor() { return isAuthor; }
     public void setIsAuthor(Boolean isAuthor) { this.isAuthor = isAuthor; }
 
+    public List<String> getLinks() { return links; }
+    public void setLinks(List<String> links) { this.links = links; }
+       
     public List<Article> getArticles() { return articles; }
     public void setArticles(List<Article> articles) { this.articles = articles; }
     
