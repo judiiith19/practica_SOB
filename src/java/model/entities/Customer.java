@@ -19,8 +19,8 @@ import java.util.List;
 @XmlRootElement
 public class Customer implements Serializable{
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Customer_Gen")
-    @SequenceGenerator(name = "Customer_Gen", sequenceName = "CUSTOMER_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "Customer_Gen", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Customer_Gen")   
     private Long id;
 
     @Column(unique = true, nullable = false)

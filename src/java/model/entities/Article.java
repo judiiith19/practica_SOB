@@ -19,8 +19,8 @@ import java.util.List;
 @XmlRootElement
 public class Article {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Article_Gen")
     @SequenceGenerator(name = "Article_Gen", sequenceName = "ARTICLE_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Article_Gen")
     private Long id;
 
     @Column(nullable = false)
