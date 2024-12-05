@@ -40,7 +40,7 @@ public class CustomerFacadeREST extends AbstractFacade{
     public Response findAllCustomers() {
         List<Customer> customers = super.findAll();
         customers.forEach(customer -> {
-            customer.setPassword("0");
+            customer.setPassword(null);
             if (customer.getArticles() != null && !customer.getArticles().isEmpty()) {
                 Article lastArticle = customer.getArticles()
                         .stream()
@@ -62,7 +62,7 @@ public class CustomerFacadeREST extends AbstractFacade{
         if (customer == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        customer.setPassword("0"); // No devolver contraseñas
+        customer.setPassword(null); // No devolver contraseñas
         return Response.ok(customer).build();
     }
     
