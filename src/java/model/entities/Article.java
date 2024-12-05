@@ -26,10 +26,10 @@ public class Article {
     @Column(name = "TITLE", nullable = false)
     private String title;
 
-    @Column(name = "CONTENT", nullable = false, length = 500, columnDefinition = "VARCHAR(500)")
+    @Column(name = "CONTENT", nullable = false, columnDefinition = "CLOB")
     private String content;
 
-    @Column(name = "SUMMARY", nullable = false, length = 20, columnDefinition = "VARCHAR(20)")
+    @Column(name = "SUMMARY", nullable = false, length = 20, columnDefinition = "VARCHAR(255)")
     private String summary;
 
     @Temporal(TemporalType.TIMESTAMP)
