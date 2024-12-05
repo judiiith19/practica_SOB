@@ -4,6 +4,7 @@
  */
 package model.entities;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -36,6 +37,7 @@ public class Customer implements Serializable{
     private List<Link> links = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonbTransient
     private List<Article> articles = new ArrayList<>();
     
     //Getters i Setters
