@@ -10,7 +10,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
+import java.util.Base64;
 import model.entities.Article;
 import model.entities.Topic;
 import model.entities.Customer;
@@ -42,6 +45,10 @@ public class ArticleFacadeREST extends AbstractFacade{
     public Response findArticles(
             @QueryParam("topic") List<String> topics,
             @QueryParam("author") String author) {
+        if (topics != null && topics.size() > 2) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Maximum of two topics allowed").build();
+        }
         String query = "SELECT a FROM Article a WHERE 1=1";
         if (topics != null && !topics.isEmpty()) {
             query += " AND a.topic.name IN :topics";
@@ -97,11 +104,12 @@ public class ArticleFacadeREST extends AbstractFacade{
     @DELETE
     @Path("{id}")
     @Secured
-    public Response deleteArticle(@PathParam("id") Long id) {
+    public Response deleteArticle(@PathParam("id") Long id, @Context HttpHeaders headers) {
         Article article = (Article) super.find(id);
         if (article == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+        
         super.remove(article);
         return Response.ok().build();
     }
