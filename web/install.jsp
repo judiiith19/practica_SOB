@@ -47,8 +47,8 @@
                 "INSERT INTO " + schema + ".CREDENTIALS VALUES (NEXT VALUE FOR CREDENTIALS_GEN, 'reader2', 'reader2')",
                 "INSERT INTO " + schema + ".CUSTOMER (ID, IS_AUTHOR, PASSWORD, USERNAME) VALUES (NEXT VALUE FOR CUSTOMER_GEN, TRUE, 'author1', 'author1')",
                 "INSERT INTO " + schema + ".CUSTOMER (ID, IS_AUTHOR, PASSWORD, USERNAME) VALUES (NEXT VALUE FOR CUSTOMER_GEN, FALSE, 'reader1', 'reader1')",
-                "INSERT INTO " + schema + ".CUSTOMER (ID, IS_AUTHOR, PASSWORD, USERNAME) VALUES (NEXT VALUE FOR CUSTOMER_GEN, TRUE, 'author1', 'author1')",
-                "INSERT INTO " + schema + ".CUSTOMER (ID, IS_AUTHOR, PASSWORD, USERNAME) VALUES (NEXT VALUE FOR CUSTOMER_GEN, FALSE, 'reader1', 'reader1')",
+                "INSERT INTO " + schema + ".CUSTOMER (ID, IS_AUTHOR, PASSWORD, USERNAME) VALUES (NEXT VALUE FOR CUSTOMER_GEN, TRUE, 'author2', 'author2')",
+                "INSERT INTO " + schema + ".CUSTOMER (ID, IS_AUTHOR, PASSWORD, USERNAME) VALUES (NEXT VALUE FOR CUSTOMER_GEN, FALSE, 'reader2', 'reader2')",
                 "INSERT INTO " + schema + ".ARTICLE (ID, CONTENT, IMAGE_URL, IS_PUBLIC, PUBLISHED_DATE, SUMMARY, TITLE, VIEWS, AUTHOR_ID) "
                     + "VALUES (NEXT VALUE FOR CUSTOMER_GEN, 'Text del contingut del article 1.', 'https://acortar.link/b84Ree', TRUE, '2024-12-04 17:33:00', 'Resum article 1.', 'Titol del article 1.', 0, 3)",
                 "INSERT INTO " + schema + ".ARTICLE (ID, CONTENT, IMAGE_URL, IS_PUBLIC, PUBLISHED_DATE, SUMMARY, TITLE, VIEWS, AUTHOR_ID) "
