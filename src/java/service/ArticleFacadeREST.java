@@ -110,7 +110,31 @@ public class ArticleFacadeREST extends AbstractFacade{
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         
+        String currentUser = getCurrentUser(headers); // Implementar esta lógica según tu autenticación
+        if (!article.getAuthor().getUsername().equals(currentUser)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("You can only delete your own articles").build();
+        }
+        
         super.remove(article);
         return Response.ok().build();
     }
+    
+    private String getCurrentUser(HttpHeaders headers) {
+        // Obtener el valor de la cabecera "Authorization" (usuario:contraseña)
+        String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
+        if (authorizationHeader != null && authorizationHeader.startsWith("Basic ")) {
+            // Decodifica la cabecera de autorización
+            String encodedCredentials = authorizationHeader.substring("Basic ".length());
+            String decodedCredentials = new String(Base64.getDecoder().decode(encodedCredentials));
+
+            // Los datos estarán en el formato "usuario:contraseña"
+            String[] credentials = decodedCredentials.split(":");
+            if (credentials.length > 0) {
+                return credentials[0]; // Devuelve el nombre de usuario
+            }
+        }
+        return null; // Si no se puede obtener el usuario
+    }
+
 }
