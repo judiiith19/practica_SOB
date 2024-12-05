@@ -19,7 +19,7 @@ import java.util.List;
 @XmlRootElement
 public class Article {
     @Id
-    @SequenceGenerator(name = "Article_Gen", sequenceName = "ARTICLE_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "Article_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Article_Gen")
     private Long id;
 
@@ -36,8 +36,8 @@ public class Article {
     @Column(name = "PUBLISHED_DATE", columnDefinition = "TIMESTAMP")
     private Date publishedDate;
     
-    @Column(name = "VIEWS", nullable = false, columnDefinition = "INTEGER")
-    private Integer views;
+    @Column(name = "VIEWS", nullable = false, columnDefinition = "INTEGER DEFAULT 0")
+    private Integer views = 0;
     
     @Column(name ="IMAGE_URL", nullable = false, columnDefinition = "VARCHAR(255)")
     @Pattern(regexp = "^(http|https)://.*$", message = "Not valid URL")
