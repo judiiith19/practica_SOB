@@ -102,16 +102,24 @@ public class ArticleFacadeREST extends AbstractFacade{
         if (article == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Article not found").build(); // 404 NOT FOUND
         }
+        
+        String currentUser = getCurrentUsername(headers);   // Obtenir l'username de l'usuari actual.
+        
         // Si l'article es privat...
         if (Boolean.FALSE.equals(article.getIsPublic())) {
-            String currentUser = getCurrentUser(headers);   // Obtenir l'username de l'usuari actual.
             // Si l'usuari actual no esta registrat...
+            if (!article.getAuthor().getUsername().equals(currentUser)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("This article is private").build(); // 403 FORBIDDEN
+        }
+        } else {
             if (currentUser == null || !isUserRegistered(currentUser)) {
                 return Response.status(Response.Status.UNAUTHORIZED).entity("Need to register").build();   // 401 UNAUTHORIZED
             }
+            article.setViews(article.getViews() + 1);   // Incrementar visites.
+            super.edit(article);    // Actualitzar l'entitat.
         }
-        article.setViews(article.getViews() + 1);   // Incrementar visites.
-        super.edit(article);    // Actualitzar l'entitat.
+        
         
         ArticleDetailedDTO dto = new ArticleDetailedDTO();
         dto.setTitle(article.getTitle());
@@ -127,7 +135,12 @@ public class ArticleFacadeREST extends AbstractFacade{
     
     @POST
     @Secured
-    public Response createArticle(Article article) {
+    public Response createArticle(Article article, @Context HttpHeaders headers) {
+        String currentUser = getCurrentUsername(headers);
+        
+        // Valida que l'usuari actual esta registrat i obte les seves dades.
+        Customer author = getCurrentCustomer(currentUser);
+        
         // Comprova si existeixen els temes a la BD
         for (Topic topic : article.getTopics()) {
             // Si no es troba el tema...
@@ -136,16 +149,14 @@ public class ArticleFacadeREST extends AbstractFacade{
                         .entity("Invalid topic: " + topic.getName()).build(); // 400 BAD REQUEST
             }
         }
-        // Si no es troba l'autor...
-        if (em.find(Customer.class, article.getAuthor().getId()) == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Invalid author").build();  // 400 BAD REQUEST
-        }
+        
         // Si no era autor...
-        if (!article.getAuthor().getIsAuthor()) {
-            article.getAuthor().setIsAuthor(Boolean.TRUE);  //Pasa a ser autor.
+        if (!author.getIsAuthor()) {
+            author.setIsAuthor(true);  //Pasa a ser autor.
         }
-        article.getAuthor().getArticles().add(article);     //S'afegeix a la llista d'articles.
+        
+        author.getArticles().add(article);  //S'afegeix a la llista d'articles.
+        article.setAuthor(author);  //Establir autor de l'article.   
         article.setPublishedDate(new java.util.Date()); // Establir data de publicacio
         super.create(article);  // Guardar l'entitat
         return Response.status(Response.Status.CREATED)
@@ -163,7 +174,7 @@ public class ArticleFacadeREST extends AbstractFacade{
             return Response.status(Response.Status.NOT_FOUND).build();  // 404 NOT FOUND
         }
         
-        String currentUser = getCurrentUser(headers);   // Obtenir l'username de l'usuari actual.
+        String currentUser = getCurrentUsername(headers);   // Obtenir l'username de l'usuari actual.
         // Si no es l'autor de l'article...
         if (!article.getAuthor().getUsername().equals(currentUser)) {
             return Response.status(Response.Status.FORBIDDEN)
@@ -174,7 +185,7 @@ public class ArticleFacadeREST extends AbstractFacade{
         return Response.ok().build();
     }
     
-    private String getCurrentUser(HttpHeaders headers) {
+    private String getCurrentUsername(HttpHeaders headers) {
         // Obtener el valor de la cabecera "Authorization" (usuario:contraseña)
         String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
         // Si l'autentificacio es amb HTTP Basic...
@@ -201,6 +212,19 @@ public class ArticleFacadeREST extends AbstractFacade{
             return credentials != null; // Si es troba l'username, está registrat.
         } catch (NoResultException e) {
             return false; // Usuari no trobat.
+        }
+    }
+    
+    private Customer getCurrentCustomer(String username) {
+        try {
+            TypedQuery<Customer> query = em.createNamedQuery("Customer.findByUsername", Customer.class);
+            query.setParameter("username", username);
+            return query.getSingleResult(); // Retorna l'usuari actual
+        } catch (NoResultException e) {
+            throw new WebApplicationException(
+                    Response.status(Response.Status.NOT_FOUND)
+                            .entity("User not found in the database").build()
+            );
         }
     }
 

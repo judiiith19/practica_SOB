@@ -17,6 +17,10 @@ import java.util.List;
  */
 @Entity
 @Table(name = "CUSTOMER")
+@NamedQuery(
+    name = "Customer.findByUsername",
+    query = "SELECT c FROM Customer c WHERE c.username = :username"
+)
 @XmlRootElement
 public class Customer implements Serializable{
     @Id
@@ -27,11 +31,10 @@ public class Customer implements Serializable{
     @Column(name = "USERNAME", unique = true, nullable = false, columnDefinition = "VARCHAR(255)")
     private String username;    // Nom de l'usuari.
 
-    @JsonbTransient // No serialitzat per no mostrar info sensible.
     @Column(name = "PASSWORD", nullable = false, length = 12, columnDefinition = "VARCHAR(12)")
     private String password;    // Contrasenya de l'usuari.
     
-    @Column(name = "IS_AUTHOR", columnDefinition = "BOOLEAN")
+    @Column(name = "IS_AUTHOR", nullable = false, columnDefinition = "BOOLEAN")
     private Boolean isAuthor;   // Indica si l'usuari es autor d'algun article.
     
     @OneToOne(mappedBy = "customer")
@@ -80,7 +83,7 @@ public class Customer implements Serializable{
 
     @Override
     public String toString() {
-        return "model.entities.User[ id=" + id + " ]";
+        return "model.entities.Customer[ id=" + id + " ]";
     }
     
 }

@@ -49,9 +49,10 @@ public class CustomerFacadeREST extends AbstractFacade{
     public Response findAllCustomers() {
         // Busca tots els usuaris.
         List<Customer> customers = super.findAll();
-        List<CustomerDTO> customerDTOs = new ArrayList<>();
-        // Per cada usuari s'afegeix l'ellaç HATEOAS
+        List<CustomerDTO> customerDTOs = new ArrayList<>(); // Usuaris DTO.
+        // Per cada usuari s'afegeix l'ellaç HATEOAS.
         customers.forEach(customer -> {
+            // Afegir dades al DTO.
             CustomerDTO dto = new CustomerDTO();
             dto.setUsername(customer.getUsername());
             dto.setIsAuthor(customer.getIsAuthor());
@@ -63,18 +64,26 @@ public class CustomerFacadeREST extends AbstractFacade{
                         .stream()
                         .max((a1, a2) -> a1.getPublishedDate().compareTo(a2.getPublishedDate()))
                         .orElse(null);
-                // Crea l'enllaç per l'ultim article publicat.
-                Link link = new Link();
-                link.setLink("/api/v1/article/" + (lastArticle != null ? lastArticle.getId() : ""));
-                link.setCustomer(customer);
-                
-                if (customer.getLink() == null || !customer.getLink().getLink().equals(link.getLink())) {
-                    customer.setLink(link);
+                // Si existeix...
+                if (lastArticle != null) {
+                    String linkRef = "/api/v1/article/" + lastArticle.getId();  // Enllaç HATEOAS.
+                    //Si no te enllaç o l'enllaç es diferent al nou...
+                    if (customer.getLink() == null || !customer.getLink().getLink().equals(linkRef)) {
+                        Link link = customer.getLink() == null ? new Link() : customer.getLink();   // Crea o obte l'enllaç.
+                        link.setLink(linkRef);  // Actualitza l'enllaç.
+                        link.setCustomer(customer); // Actualitza l'usuari propietari.
+                        //Si s'ha creat un nou Link...
+                        if (link.getId() == null) {
+                            em.persist(link);   // Guarda l'entitat.
+                        } else {
+                            em.merge(link); // Actualitza l'entitat.
+                        }
+                        customer.setLink(link); // Actualitza l'enllaç asociat al usuari.
+                    }              
+                    dto.setLastArticleLink(linkRef);    // Afegir + dades al DTO
                 }
-                
-                dto.setLastArticleLink(link.getLink());
             }
-            customerDTOs.add(dto);
+            customerDTOs.add(dto);  // Afegir dto a la llista de resultats.
         });
         return Response.ok(customerDTOs).build(); // Retorna la llista resultant i 200 OK
     }
@@ -88,27 +97,37 @@ public class CustomerFacadeREST extends AbstractFacade{
         if (customer == null) {
             return Response.status(Response.Status.NOT_FOUND).build(); // 404 NOT FOUND 
         }
+        // Afegir dades al DTO.
         CustomerDTO dto = new CustomerDTO();
         dto.setUsername(customer.getUsername());
         dto.setIsAuthor(customer.getIsAuthor());
         
         // Si l'usuari te articles...
         if (customer.getIsAuthor() && customer.getArticles() != null && !customer.getArticles().isEmpty()) {
-            // Busca l'ultim article de l'autor.
-            Article lastArticle = customer.getArticles()
-                    .stream()
-                    .max((a1, a2) -> a1.getPublishedDate().compareTo(a2.getPublishedDate()))
-                    .orElse(null);
-            // Crea l'enllaç per l'ultim article publicat.
-            Link link = new Link();
-            link.setLink("/api/v1/article/" + (lastArticle != null ? lastArticle.getId() : ""));
-            link.setCustomer(customer);
-             
-            if (customer.getLink() == null || !customer.getLink().getLink().equals(link.getLink())) {
-                customer.setLink(link);
+                // Busca l'ultim article de l'autor.
+                Article lastArticle = customer.getArticles()
+                        .stream()
+                        .max((a1, a2) -> a1.getPublishedDate().compareTo(a2.getPublishedDate()))
+                        .orElse(null);
+                // Si existeix...
+                if (lastArticle != null) {
+                    String linkRef = "/api/v1/article/" + lastArticle.getId();  // Enllaç HATEOAS.
+                    //Si no te enllaç o l'enllaç es diferent al nou...
+                    if (customer.getLink() == null || !customer.getLink().getLink().equals(linkRef)) {
+                        Link link = customer.getLink() == null ? new Link() : customer.getLink();   // Crea o obte l'enllaç.
+                        link.setLink(linkRef);  // Actualitza l'enllaç.
+                        link.setCustomer(customer); // Actualitza l'usuari propietari.
+                        //Si s'ha creat un nou Link...
+                        if (link.getId() == null) {
+                            em.persist(link);   // Guarda l'entitat.
+                        } else {
+                            em.merge(link); // Actualitza l'entitat.
+                        }
+                        customer.setLink(link); // Actualitza l'enllaç asociat al usuari.
+                    }              
+                    dto.setLastArticleLink(linkRef);    // Afegir + dades al DTO
+                }
             }
-            dto.setLastArticleLink(link.getLink());
-        }
         return Response.ok(dto).build(); // Retorna l'usuari resultant i 200 OK
     }
     
@@ -123,7 +142,7 @@ public class CustomerFacadeREST extends AbstractFacade{
             return Response.status(Response.Status.NOT_FOUND).build();  // 404 NOT FOUND
         }
         
-        String currentUser = getCurrentUser(headers);   // Obtenir l'username de l'usuari actual.
+        String currentUser = getCurrentUsername(headers);   // Obtenir l'username de l'usuari actual.
         // Si no es l'usuari a modificar no es l'actual...
         if (!existingCustomer.getUsername().equals(currentUser)) {
             return Response.status(Response.Status.FORBIDDEN)
@@ -138,12 +157,16 @@ public class CustomerFacadeREST extends AbstractFacade{
         // Actualitzar les dades.
         existingCustomer.setUsername(customer.getUsername());
         existingCustomer.setPassword(customer.getPassword());
-        existingCustomer.setIsAuthor(customer.getIsAuthor());
         super.edit(existingCustomer);   //Actualitzar l'entitat.
+        
+        // Afegir dades al DTO.
+        CustomerDTO dto = new CustomerDTO();
+        dto.setUsername(existingCustomer.getUsername());
+        dto.setIsAuthor(existingCustomer.getIsAuthor());
         return Response.ok(existingCustomer).build();   // Retorna les dades actualitzades i 200 OK
     }
     
-    private String getCurrentUser(HttpHeaders headers) {
+    private String getCurrentUsername(HttpHeaders headers) {
         // Obtener el valor de la cabecera "Authorization" (usuario:contraseña)
         String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
         // Si l'autentificacio es amb HTTP Basic...
