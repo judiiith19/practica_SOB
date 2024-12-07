@@ -27,14 +27,15 @@ public class Customer implements Serializable{
     @Column(name = "USERNAME", unique = true, nullable = false, columnDefinition = "VARCHAR(255)")
     private String username;    // Nom de l'usuari.
 
+    @JsonbTransient // No serialitzat per no mostrar info sensible.
     @Column(name = "PASSWORD", nullable = false, length = 12, columnDefinition = "VARCHAR(12)")
     private String password;    // Contrasenya de l'usuari.
     
     @Column(name = "IS_AUTHOR", columnDefinition = "BOOLEAN")
     private Boolean isAuthor;   // Indica si l'usuari es autor d'algun article.
     
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Link> links = new ArrayList<>();   // Llista d'enllaços HATEOAS asociats a l'usuari.
+    @OneToOne(mappedBy = "customer")
+    private Link link;   // Enllaç HATEOAS asociat a l'usuari.
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonbTransient // No serialitzat per evitar cicles.
@@ -54,8 +55,8 @@ public class Customer implements Serializable{
     public Boolean getIsAuthor() { return isAuthor; }
     public void setIsAuthor(Boolean isAuthor) { this.isAuthor = isAuthor; }
 
-    public List<Link> getLinks() { return links; }
-    public void setLinks(List<Link> links) { this.links = links; }
+    public Link getLink() { return link; }
+    public void setLink(Link link) { this.link = link; }
        
     public List<Article> getArticles() { return articles; }
     public void setArticles(List<Article> articles) { this.articles = articles; }

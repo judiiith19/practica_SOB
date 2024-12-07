@@ -6,6 +6,8 @@ package service;
 
 import authn.Credentials;
 import authn.Secured;
+import dto.ArticleSimpleDTO;
+import dto.ArticleDetailedDTO;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -74,7 +76,20 @@ public class ArticleFacadeREST extends AbstractFacade{
         
         // Retorna la llista resultant
         List<Article> articles = q.getResultList();
-        return Response.ok(articles).build();   // 200 OK
+        
+        // Transformar resultados para incluir solo los campos requeridos.
+        List<ArticleSimpleDTO> articleDTOs = articles.stream().map(article -> {
+            ArticleSimpleDTO dto = new ArticleSimpleDTO();
+            dto.setTitle(article.getTitle());
+            dto.setAuthor(article.getAuthor().getUsername());
+            dto.setSummary(article.getSummary());
+            dto.setPublishedDate(article.getPublishedDate());
+            dto.setViews(article.getViews());
+            dto.setImageUrl(article.getImageUrl());
+            return dto;
+        }).toList();
+        
+        return Response.ok(articleDTOs).build();   // 200 OK
     }
     
     @GET
@@ -97,7 +112,17 @@ public class ArticleFacadeREST extends AbstractFacade{
         }
         article.setViews(article.getViews() + 1);   // Incrementar visites.
         super.edit(article);    // Actualitzar l'entitat.
-        return Response.ok(article).build();    // Retorna l'article resultant i 200 OK
+        
+        ArticleDetailedDTO dto = new ArticleDetailedDTO();
+        dto.setTitle(article.getTitle());
+        dto.setAuthor(article.getAuthor().getUsername());
+        dto.setPublishedDate(article.getPublishedDate());
+        dto.setViews(article.getViews());
+        dto.setTopics(article.getTopics().stream().map(Topic::getName).toList());
+        dto.setContent(article.getContent());
+        dto.setImageUrl(article.getImageUrl());
+        
+        return Response.ok(dto).build();    // Retorna l'article resultant i 200 OK
     }
     
     @POST

@@ -19,8 +19,8 @@ public class Link {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Link_Gen")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "CUSTOMER_ID")
+    @OneToOne
+    @JoinColumn(name = "CUSTOMER_ID", nullable = false)
     @JsonbTransient // No serialitzat per evitar cicles.
     private Customer customer;  // Usuari asociat a l'enllaç.
 
@@ -28,29 +28,14 @@ public class Link {
     
     public Link () {}
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
+    public Customer getCustomer() { return customer; }
+    public void setCustomer(Customer customer) { this.customer = customer; }
+    
+    public String getLink() { return link; }
+    public void setLink(String link) { this.link = link; }
     
     @Override
     public int hashCode() {

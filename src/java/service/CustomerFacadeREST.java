@@ -6,6 +6,7 @@ package service;
 
 import authn.Credentials;
 import authn.Secured;
+import dto.CustomerDTO;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -15,6 +16,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.Base64;
 import model.entities.Article;
 import model.entities.Customer;
@@ -47,10 +49,15 @@ public class CustomerFacadeREST extends AbstractFacade{
     public Response findAllCustomers() {
         // Busca tots els usuaris.
         List<Customer> customers = super.findAll();
-        // Per cada usuari s'afegeixen ellaços HATEOAS
+        List<CustomerDTO> customerDTOs = new ArrayList<>();
+        // Per cada usuari s'afegeix l'ellaç HATEOAS
         customers.forEach(customer -> {
+            CustomerDTO dto = new CustomerDTO();
+            dto.setUsername(customer.getUsername());
+            dto.setIsAuthor(customer.getIsAuthor());
+            
             // Si l'usuari te articles...
-            if (customer.getArticles() != null && !customer.getArticles().isEmpty()) {
+            if (customer.getIsAuthor() && customer.getArticles() != null && !customer.getArticles().isEmpty()) {
                 // Busca l'ultim article de l'autor.
                 Article lastArticle = customer.getArticles()
                         .stream()
@@ -60,36 +67,49 @@ public class CustomerFacadeREST extends AbstractFacade{
                 Link link = new Link();
                 link.setLink("/api/v1/article/" + (lastArticle != null ? lastArticle.getId() : ""));
                 link.setCustomer(customer);
-                //Afegir l'enllaç a la llista d'enllaços.
-                customer.getLinks().add(link);
+                
+                if (customer.getLink() == null || !customer.getLink().getLink().equals(link.getLink())) {
+                    customer.setLink(link);
+                }
+                
+                dto.setLastArticleLink(link.getLink());
             }
+            customerDTOs.add(dto);
         });
-        return Response.ok(customers).build(); // Retorna la llista resultant i 200 OK
+        return Response.ok(customerDTOs).build(); // Retorna la llista resultant i 200 OK
     }
     
     @GET
     @Path("/{id}")
     public Response getCustomer(@PathParam("id") Long id) {
         // Busca l'usuari per ID.
-        Customer customer = (Customer) find(id);
+        Customer customer = (Customer) super.find(id);
         // Si no existeix...
         if (customer == null) {
             return Response.status(Response.Status.NOT_FOUND).build(); // 404 NOT FOUND 
         }
-        if (customer.getArticles() != null && !customer.getArticles().isEmpty()) {
-                // Busca l'ultim article de l'autor.
-                Article lastArticle = customer.getArticles()
-                        .stream()
-                        .max((a1, a2) -> a1.getPublishedDate().compareTo(a2.getPublishedDate()))
-                        .orElse(null);
-                // Crea l'enllaç per l'ultim article publicat.
-                Link link = new Link();
-                link.setLink("/api/v1/article/" + (lastArticle != null ? lastArticle.getId() : ""));
-                link.setCustomer(customer);
-                //Afegir l'enllaç a la llista d'enllaços.
-                customer.getLinks().add(link);
+        CustomerDTO dto = new CustomerDTO();
+        dto.setUsername(customer.getUsername());
+        dto.setIsAuthor(customer.getIsAuthor());
+        
+        // Si l'usuari te articles...
+        if (customer.getIsAuthor() && customer.getArticles() != null && !customer.getArticles().isEmpty()) {
+            // Busca l'ultim article de l'autor.
+            Article lastArticle = customer.getArticles()
+                    .stream()
+                    .max((a1, a2) -> a1.getPublishedDate().compareTo(a2.getPublishedDate()))
+                    .orElse(null);
+            // Crea l'enllaç per l'ultim article publicat.
+            Link link = new Link();
+            link.setLink("/api/v1/article/" + (lastArticle != null ? lastArticle.getId() : ""));
+            link.setCustomer(customer);
+             
+            if (customer.getLink() == null || !customer.getLink().getLink().equals(link.getLink())) {
+                customer.setLink(link);
             }
-        return Response.ok(customer).build(); // Retorna l'usuari resultant i 200 OK
+            dto.setLastArticleLink(link.getLink());
+        }
+        return Response.ok(dto).build(); // Retorna l'usuari resultant i 200 OK
     }
     
     @PUT
