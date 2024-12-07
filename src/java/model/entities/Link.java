@@ -4,6 +4,7 @@
  */
 package model.entities;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 
 /**
@@ -20,6 +21,7 @@ public class Link {
 
     @ManyToOne
     @JoinColumn(name = "CUSTOMER_ID")
+    @JsonbTransient
     private Customer customer;
 
     private String link;
