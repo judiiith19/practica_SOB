@@ -45,85 +45,111 @@ public class CustomerFacadeREST extends AbstractFacade{
     
     @GET
     public Response findAllCustomers() {
+        // Busca tots els usuaris.
         List<Customer> customers = super.findAll();
+        // Per cada usuari s'afegeixen ellaços HATEOAS
         customers.forEach(customer -> {
-            //customer.setPassword(null);
+            // Si l'usuari te articles...
             if (customer.getArticles() != null && !customer.getArticles().isEmpty()) {
+                // Busca l'ultim article de l'autor.
                 Article lastArticle = customer.getArticles()
                         .stream()
                         .max((a1, a2) -> a1.getPublishedDate().compareTo(a2.getPublishedDate()))
                         .orElse(null);
+                // Crea l'enllaç per l'ultim article publicat.
                 Link link = new Link();
                 link.setLink("/api/v1/article/" + (lastArticle != null ? lastArticle.getId() : ""));
                 link.setCustomer(customer);
+                //Afegir l'enllaç a la llista d'enllaços.
                 customer.getLinks().add(link);
             }
         });
-        return Response.ok(customers).build();
+        return Response.ok(customers).build(); // Retorna la llista resultant i 200 OK
     }
     
     @GET
     @Path("/{id}")
     public Response getCustomer(@PathParam("id") Long id) {
+        // Busca l'usuari per ID.
         Customer customer = (Customer) find(id);
+        // Si no existeix...
         if (customer == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).build(); // 404 NOT FOUND 
         }
-        return Response.ok(customer).build();
+        if (customer.getArticles() != null && !customer.getArticles().isEmpty()) {
+                // Busca l'ultim article de l'autor.
+                Article lastArticle = customer.getArticles()
+                        .stream()
+                        .max((a1, a2) -> a1.getPublishedDate().compareTo(a2.getPublishedDate()))
+                        .orElse(null);
+                // Crea l'enllaç per l'ultim article publicat.
+                Link link = new Link();
+                link.setLink("/api/v1/article/" + (lastArticle != null ? lastArticle.getId() : ""));
+                link.setCustomer(customer);
+                //Afegir l'enllaç a la llista d'enllaços.
+                customer.getLinks().add(link);
+            }
+        return Response.ok(customer).build(); // Retorna l'usuari resultant i 200 OK
     }
     
     @PUT
     @Path("{id}")
     @Secured
     public Response updateUser(@PathParam("id") Long id, Customer customer, @Context HttpHeaders headers) {
+        // Busca l'usuari per ID.
         Customer existingCustomer = (Customer) super.find(id);
+        // Si no existeix...
         if (existingCustomer == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).build();  // 404 NOT FOUND
         }
         
-        String currentUser = getCurrentUser(headers);
+        String currentUser = getCurrentUser(headers);   // Obtenir l'username de l'usuari actual.
+        // Si no es l'usuari a modificar no es l'actual...
         if (!existingCustomer.getUsername().equals(currentUser)) {
             return Response.status(Response.Status.FORBIDDEN)
-                    .entity("You can only modify your own profile").build();
+                    .entity("You can only modify your own profile").build();    //403 FORBIDDEN
         }
-        
+        // Si l'username ja esta en us...
         if (customer.getUsername() == null || isUserRegistered(customer.getUsername())) {
             return Response.status(Response.Status.BAD_REQUEST)
-                .entity("Username already in use").build();
+                .entity("Username already in use").build();     // 400 BAD_REQUEST
         }
         
+        // Actualitzar les dades.
         existingCustomer.setUsername(customer.getUsername());
         existingCustomer.setPassword(customer.getPassword());
         existingCustomer.setIsAuthor(customer.getIsAuthor());
-        super.edit(existingCustomer);
-        return Response.ok(existingCustomer).build();
+        super.edit(existingCustomer);   //Actualitzar l'entitat.
+        return Response.ok(existingCustomer).build();   // Retorna les dades actualitzades i 200 OK
     }
     
     private String getCurrentUser(HttpHeaders headers) {
         // Obtener el valor de la cabecera "Authorization" (usuario:contraseña)
         String authorizationHeader = headers.getHeaderString(HttpHeaders.AUTHORIZATION);
+        // Si l'autentificacio es amb HTTP Basic...
         if (authorizationHeader != null && authorizationHeader.startsWith("Basic ")) {
-            // Decodifica la cabecera de autorización
-            String encodedCredentials = authorizationHeader.substring("Basic ".length());
-            String decodedCredentials = new String(Base64.getDecoder().decode(encodedCredentials));
+            // Decodifica la capçalera d'autorizacio
+            String encodedCredentials = authorizationHeader.substring("Basic ".length());   //Agafem el contingut despres de "Basic"
+            String decodedCredentials = new String(Base64.getDecoder().decode(encodedCredentials)); //Decodifiquem Base64
 
-            // Los datos estarán en el formato "usuario:contraseña"
+            // Les dades estan en format "usuari:contrasenya"
             String[] credentials = decodedCredentials.split(":");
             if (credentials.length > 0) {
-                return credentials[0]; // Devuelve el nombre de usuario
+                return credentials[0]; // Retorna l'username.
             }
         }
-        return null; // Si no se puede obtener el usuario
+        return null; // Retorna null si no ha pogut obtindre les credencials.
     }
     
     private boolean isUserRegistered(String username) {
         try {
+            // Busca les credencials segons l'username.
             TypedQuery<Credentials> query = em.createNamedQuery("Credentials.findUser", Credentials.class);
-            query.setParameter("username", username);
-            Credentials credentials = query.getSingleResult();
-            return credentials != null; // Si encuentra el usuario, está registrado
+            query.setParameter("username", username);   //Establir parametre per l'username.
+            Credentials credentials = query.getSingleResult();   // Resultat
+            return credentials != null; // Si es troba l'username, está registrat.
         } catch (NoResultException e) {
-            return false; // Usuario no encontrado
+            return false; // Usuari no trobat.
         }
     }
 }

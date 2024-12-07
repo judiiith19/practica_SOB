@@ -25,20 +25,20 @@ public class Customer implements Serializable{
     private Long id;
 
     @Column(name = "USERNAME", unique = true, nullable = false, columnDefinition = "VARCHAR(255)")
-    private String username;
+    private String username;    // Nom de l'usuari.
 
     @Column(name = "PASSWORD", nullable = false, length = 12, columnDefinition = "VARCHAR(12)")
-    private String password;
+    private String password;    // Contrasenya de l'usuari.
     
     @Column(name = "IS_AUTHOR", columnDefinition = "BOOLEAN")
-    private Boolean isAuthor;
+    private Boolean isAuthor;   // Indica si l'usuari es autor d'algun article.
     
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Link> links = new ArrayList<>();
+    private List<Link> links = new ArrayList<>();   // Llista d'enllaços HATEOAS asociats a l'usuari.
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonbTransient
-    private List<Article> articles = new ArrayList<>();
+    @JsonbTransient // No serialitzat per evitar cicles.
+    private List<Article> articles = new ArrayList<>(); // Llista d'articles creats per l'usuari.
     
     //Getters i Setters
 

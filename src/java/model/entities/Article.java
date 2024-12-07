@@ -23,40 +23,41 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Article_Gen")
     private Long id;
 
-    @Column(name = "TITLE", nullable = false)
-    private String title;
+    @Column(name = "TITLE", nullable = false, length = 200, columnDefinition = "VARCHAR(200)")
+    private String title;   //Titol de l'article.
 
     @Column(name = "CONTENT", nullable = false, length = 5000, columnDefinition = "VARCHAR(5000)")
-    private String content;
+    private String content; // Contingut de l'article (max. 500 paraules).
 
     @Column(name = "SUMMARY", nullable = false, length = 20, columnDefinition = "VARCHAR(255)")
-    private String summary;
+    private String summary; // Resum del contingut de l'article (max. 20 paraules).
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "PUBLISHED_DATE", columnDefinition = "TIMESTAMP")
-    private Date publishedDate;
+    private Date publishedDate; // Data de publicacio.
     
     @Column(name = "VIEWS", nullable = false, columnDefinition = "INTEGER DEFAULT 0")
-    private Integer views = 0;
+    private Integer views = 0;  // Num. visites, default 0.
     
     @Column(name ="IMAGE_URL", nullable = false, columnDefinition = "VARCHAR(255)")
     @Pattern(regexp = "^(http|https)://.*$", message = "Not valid URL")
-    private String imageUrl;
+    private String imageUrl;    // URL de la imatge de l'article.
 
     @Column(name = "IS_PUBLIC", columnDefinition = "BOOLEAN")
-    private Boolean isPublic;
+    private Boolean isPublic;   // Indica si l'article es public o no.
 
     @ManyToMany
+    // Taula que guarda les relacions Article - Topic.
     @JoinTable(
         name = "ARTICLE_TOPIC",
         joinColumns = @JoinColumn(name = "ARTICLE_ID"),
         inverseJoinColumns = @JoinColumn(name = "TOPIC_ID")
     )
-    private List<Topic> topics = new ArrayList<>();
+    private List<Topic> topics = new ArrayList<>(); // Llista de temes asociats a l'article
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "AUTHOR_ID", nullable = false)
-    private Customer author;
+    private Customer author;    // L'autor del article.
     
     //Getters i Setters
 

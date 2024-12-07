@@ -21,10 +21,10 @@ public class Link {
 
     @ManyToOne
     @JoinColumn(name = "CUSTOMER_ID")
-    @JsonbTransient
-    private Customer customer;
+    @JsonbTransient // No serialitzat per evitar cicles.
+    private Customer customer;  // Usuari asociat a l'enllaç.
 
-    private String link;
+    private String link;    // URL.
     
     public Link () {}
 
