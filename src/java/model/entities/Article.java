@@ -26,7 +26,7 @@ public class Article {
     @Column(name = "TITLE", nullable = false)
     private String title;
 
-    @Column(name = "CONTENT", nullable = false, columnDefinition = "CLOB")
+    @Column(name = "CONTENT", nullable = false, length = 5000, columnDefinition = "VARCHAR(5000)")
     private String content;
 
     @Column(name = "SUMMARY", nullable = false, length = 20, columnDefinition = "VARCHAR(255)")
