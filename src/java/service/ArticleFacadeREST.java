@@ -4,9 +4,11 @@
  */
 package service;
 
+import authn.Credentials;
 import authn.Secured;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.ws.rs.*;
@@ -49,9 +51,9 @@ public class ArticleFacadeREST extends AbstractFacade{
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Maximum of two topics allowed").build();
         }
-        String query = "SELECT a FROM Article a WHERE 1=1";
+        String query = "SELECT DISTINCT a FROM Article a LEFT JOIN a.topics t WHERE 1=1";
         if (topics != null && !topics.isEmpty()) {
-            query += " AND a.topic.name IN :topics";
+            query += " AND t.name IN :topics";
         }
         if (author != null && !author.isEmpty()) {
             query += " AND a.author.username = :author";
@@ -72,10 +74,18 @@ public class ArticleFacadeREST extends AbstractFacade{
     
     @GET
     @Path("{id}")
-    public Response findArticleById(@PathParam("id") Long id) {
+    @Secured
+    public Response findArticleById(@PathParam("id") Long id, @Context HttpHeaders headers) {
         Article article = (Article) super.find(id);
         if (article == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if (Boolean.FALSE.equals(article.getIsPublic())) {
+            // Lógica para comprobar si el usuario autenticado tiene permiso
+            String currentUser = getCurrentUser(headers);
+            if (currentUser == null || !isUserRegistered(currentUser)) {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
         }
         article.setViews(article.getViews() + 1);
         super.edit(article);
@@ -135,6 +145,17 @@ public class ArticleFacadeREST extends AbstractFacade{
             }
         }
         return null; // Si no se puede obtener el usuario
+    }
+    
+    private boolean isUserRegistered(String username) {
+        try {
+            TypedQuery<Credentials> query = em.createNamedQuery("Credentials.findUser", Credentials.class);
+            query.setParameter("username", username);
+            Credentials credentials = query.getSingleResult();
+            return credentials != null; // Si encuentra el usuario, está registrado
+        } catch (NoResultException e) {
+            return false; // Usuario no encontrado
+        }
     }
 
 }
