@@ -4,9 +4,6 @@
  */
 package dto;
 
-import java.util.List;
-import model.entities.Link;
-
 /**
  *
  * @author JUDITH

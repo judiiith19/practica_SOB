@@ -38,7 +38,6 @@ public class ArticleDetailedDTO {
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
-
     public List<String> getTopics() { return topics; }
     public void setTopics(List<String> topics) { this.topics = topics; }
 }

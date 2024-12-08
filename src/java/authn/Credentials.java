@@ -1,7 +1,7 @@
 package authn;
+
 import java.io.Serializable;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 import model.entities.Customer;
 
