@@ -32,7 +32,7 @@ import model.entities.Link;
 @Path("api/v1/article")
 @Produces({"application/json", "application/xml"})
 @Consumes({"application/json", "application/xml"})
-public class ArticleFacadeREST extends AbstractFacade{
+public class ArticleFacadeREST extends AbstractFacade<Article>{
     @PersistenceContext(unitName = "Homework1PU")
     private EntityManager em;
 
@@ -185,7 +185,7 @@ public class ArticleFacadeREST extends AbstractFacade{
         // Si l'article esta en la llista...
         if (author.getArticles() != null && author.getArticles().contains(article)) {
             author.getArticles().remove(article); // Quitar el artículo de la lista.
-            super.edit(author); // Actualizar la relación en la base de datos.
+            em.merge(author); // Actualizar la relación en la base de datos.
         }
         
         super.remove(article);  // Elimina l'entitat.

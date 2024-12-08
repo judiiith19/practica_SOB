@@ -32,7 +32,7 @@ import model.entities.Link;
 @Path("api/v1/customer")
 @Produces({"application/json", "application/xml"})
 @Consumes({"application/json", "application/xml"})
-public class CustomerFacadeREST extends AbstractFacade{
+public class CustomerFacadeREST extends AbstractFacade<Customer>{
     @PersistenceContext(unitName = "Homework1PU")
     private EntityManager em;
 
