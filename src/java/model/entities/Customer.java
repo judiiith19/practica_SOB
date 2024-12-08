@@ -4,6 +4,7 @@
  */
 package model.entities;
 
+import authn.Credentials;
 import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -19,7 +20,7 @@ import java.util.List;
 @Table(name = "CUSTOMER")
 @NamedQuery(
     name = "Customer.findByUsername",
-    query = "SELECT c FROM Customer c WHERE c.username = :username"
+    query = "SELECT c FROM Customer c WHERE c.credentials.username = :username"
 )
 @XmlRootElement
 public class Customer implements Serializable{
@@ -28,11 +29,15 @@ public class Customer implements Serializable{
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Customer_Gen")   
     private Long id;
 
-    @Column(name = "USERNAME", unique = true, nullable = false, columnDefinition = "VARCHAR(255)")
+    /*@Column(name = "USERNAME", unique = true, nullable = false, columnDefinition = "VARCHAR(255)")
     private String username;    // Nom de l'usuari.
 
     @Column(name = "PASSWORD", nullable = false, length = 12, columnDefinition = "VARCHAR(12)")
-    private String password;    // Contrasenya de l'usuari.
+    private String password;    // Contrasenya de l'usuari.*/
+    
+    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
+    @JoinColumn(name = "CREDENTIALS_ID", nullable = false)
+    private Credentials credentials; // credencials de l'usuari (username i password)
     
     @Column(name = "IS_AUTHOR", nullable = false, columnDefinition = "BOOLEAN")
     private Boolean isAuthor;   // Indica si l'usuari es autor d'algun article.
@@ -49,11 +54,8 @@ public class Customer implements Serializable{
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public Credentials getCredentials() { return credentials; }
+    public void setCredentials(Credentials credentials) { this.credentials = credentials; }
 
     public Boolean getIsAuthor() { return isAuthor; }
     public void setIsAuthor(Boolean isAuthor) { this.isAuthor = isAuthor; }

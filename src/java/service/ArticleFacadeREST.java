@@ -22,6 +22,7 @@ import model.entities.Article;
 import model.entities.Topic;
 import model.entities.Customer;
 import java.util.List;
+import model.entities.Link;
 
 /**
  *
@@ -60,7 +61,7 @@ public class ArticleFacadeREST extends AbstractFacade{
             query += " AND t.name IN :topics";  // Filtra per temes.
         }
         if (author != null && !author.isEmpty()) {
-            query += " AND a.author.username = :author";    // Filtra per autor.
+            query += " AND a.author.credentials.username = :author";    // Filtra per autor.
         }
         query += " ORDER BY a.views DESC";  // Ordena per popularitat.
 
@@ -81,7 +82,7 @@ public class ArticleFacadeREST extends AbstractFacade{
         List<ArticleSimpleDTO> articleDTOs = articles.stream().map(article -> {
             ArticleSimpleDTO dto = new ArticleSimpleDTO();
             dto.setTitle(article.getTitle());
-            dto.setAuthor(article.getAuthor().getUsername());
+            dto.setAuthor(article.getAuthor().getCredentials().getUsername());
             dto.setSummary(article.getSummary());
             dto.setPublishedDate(article.getPublishedDate());
             dto.setViews(article.getViews());
@@ -108,7 +109,7 @@ public class ArticleFacadeREST extends AbstractFacade{
         // Si l'article es privat...
         if (Boolean.FALSE.equals(article.getIsPublic())) {
             // Si l'usuari actual no esta registrat...
-            if (!article.getAuthor().getUsername().equals(currentUser)) {
+            if (!article.getAuthor().getCredentials().getUsername().equals(currentUser)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("This article is private").build(); // 403 FORBIDDEN
         }
@@ -123,7 +124,7 @@ public class ArticleFacadeREST extends AbstractFacade{
         
         ArticleDetailedDTO dto = new ArticleDetailedDTO();
         dto.setTitle(article.getTitle());
-        dto.setAuthor(article.getAuthor().getUsername());
+        dto.setAuthor(article.getAuthor().getCredentials().getUsername());
         dto.setPublishedDate(article.getPublishedDate());
         dto.setViews(article.getViews());
         dto.setTopics(article.getTopics().stream().map(Topic::getName).toList());
@@ -176,13 +177,52 @@ public class ArticleFacadeREST extends AbstractFacade{
         
         String currentUser = getCurrentUsername(headers);   // Obtenir l'username de l'usuari actual.
         // Si no es l'autor de l'article...
-        if (!article.getAuthor().getUsername().equals(currentUser)) {
+        if (!article.getAuthor().getCredentials().getUsername().equals(currentUser)) {
             return Response.status(Response.Status.FORBIDDEN)
                     .entity("You can only delete your own articles").build();   // 403 FORBIDDEN
         }
+        Customer author = article.getAuthor();
+        // Si l'article esta en la llista...
+        if (author.getArticles() != null && author.getArticles().contains(article)) {
+            author.getArticles().remove(article); // Quitar el artículo de la lista.
+            super.edit(author); // Actualizar la relación en la base de datos.
+        }
         
         super.remove(article);  // Elimina l'entitat.
-        return Response.ok().build();
+        
+        // Actualitza l'enllaç al ultim article de l'autor.
+        // Si l'usuari te articles...
+        if (author.getArticles() != null && !author.getArticles().isEmpty()) {
+            // Busca l'ultim article restant de l'autor.
+            Article lastArticle = author.getArticles()
+                    .stream()
+                    .max((a1, a2) -> a1.getPublishedDate().compareTo(a2.getPublishedDate()))
+                    .orElse(null);
+
+            // Si hi ha mes articles...
+            if (lastArticle != null) {
+                String linkRef = "/api/v1/article/" + lastArticle.getId();  // Nou enllaç HATEOAS.
+                Link link = author.getLink() == null ? new Link() : author.getLink();   // Obté o crea l'enllaç.
+                link.setLink(linkRef);  // Actualitza l'enllaç.
+                link.setCustomer(author);  // Actualitza l'usuari propietari.
+
+                // Si és un nou enllaç...
+                if (link.getId() == null) {
+                    em.persist(link);   // Guarda el nou enllaç.
+                } else {
+                    em.merge(link); // Actualitza l'enllaç existent.
+                }
+                author.setLink(link);  // Actualitza l'enllaç asociat a l'usuari.
+            } else {
+                // Si no hi ha més articles, elimina l'enllaç.
+                if (author.getLink() != null) {
+                    em.remove(author.getLink());  // Elimina el link de la BD.
+                    author.setLink(null); // Actualitza l'enllaç asociat a l'usuari.
+                }
+            }
+        }
+        
+        return Response.ok().entity("Article deleted with ID: " + id).build();    //200 OK
     }
     
     private String getCurrentUsername(HttpHeaders headers) {
