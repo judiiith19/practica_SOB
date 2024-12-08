@@ -4,13 +4,14 @@
  */
 package dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author JUDITH
  */
-public class ArticleSimpleDTO {
+public class ArticleSimpleDTO implements Serializable {
     private String title;
     private String author;
     private String summary;

@@ -4,11 +4,13 @@
  */
 package dto;
 
+import java.io.Serializable;
+
 /**
  *
  * @author JUDITH
  */
-public class CustomerDTO {
+public class CustomerDTO implements Serializable {
     private String username;
     private Boolean isAuthor;
     private String lastArticleLink; // Enlace al último artículo publicado.

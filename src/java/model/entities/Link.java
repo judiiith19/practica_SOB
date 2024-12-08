@@ -6,6 +6,7 @@ package model.entities;
 
 import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
+import java.io.Serializable;
 
 /**
  *
@@ -13,7 +14,7 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "LINK")
-public class Link {
+public class Link implements Serializable {
     @Id
     @SequenceGenerator(name="Link_Gen", allocationSize=1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Link_Gen")

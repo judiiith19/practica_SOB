@@ -7,6 +7,7 @@ package model.entities;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 @Entity
 @XmlRootElement
-public class Article {
+public class Article implements Serializable {
     @Id
     @SequenceGenerator(name = "Article_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Article_Gen")
