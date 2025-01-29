@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class ArticleServiceImpl implements ArticleService{
     private static final Logger LOGGER = Logger.getLogger(ArticleServiceImpl.class.getName());
-    private WebTarget webTarget;
+    private final WebTarget webTarget;
     private final Client client;
     private static final String baseURI = "http://localhost:8080/Homework1/webresources/api/v1/";
 
@@ -75,8 +75,7 @@ public class ArticleServiceImpl implements ArticleService{
      */
     @Override
     public ArticleDetailedDTO findArticleById(Long id, HttpHeaders headers){
-        webTarget = client.target(baseURI + "/" + id);  // Agregar el ID a la URL
-        try (Response response = webTarget.path(String.valueOf(id))
+        try (Response response = webTarget.path("/"+String.valueOf(id))
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, headers)
                 .get()) {
