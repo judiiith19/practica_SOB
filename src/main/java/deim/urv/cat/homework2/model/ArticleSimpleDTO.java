@@ -6,6 +6,7 @@ package deim.urv.cat.homework2.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -18,6 +19,7 @@ public class ArticleSimpleDTO implements Serializable {
     private Date publishedDate;
     private Integer views;
     private String imageUrl;
+    private List<Topic> topics;
     
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -36,4 +38,7 @@ public class ArticleSimpleDTO implements Serializable {
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public List<Topic> getTopics() { return topics; }
+    public void setTopics(List<Topic> topics) { this.topics = topics; }
 }

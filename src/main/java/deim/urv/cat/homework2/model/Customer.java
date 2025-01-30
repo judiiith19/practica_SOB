@@ -27,12 +27,6 @@ public class Customer implements Serializable{
     @SequenceGenerator(name = "Customer_Gen", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Customer_Gen")   
     private Long id;
-
-    /*@Column(name = "USERNAME", unique = true, nullable = false, columnDefinition = "VARCHAR(255)")
-    private String username;    // Nom de l'usuari.
-
-    @Column(name = "PASSWORD", nullable = false, length = 12, columnDefinition = "VARCHAR(12)")
-    private String password;    // Contrasenya de l'usuari.*/
     
     @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
     @JoinColumn(name = "CREDENTIALS_ID", nullable = false)
