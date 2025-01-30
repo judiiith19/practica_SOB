@@ -1,0 +1,134 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #EAF3FF;
+    margin: 0;
+    padding: 0;
+}
+
+.top-div{
+    color: #2e6da4;
+    padding: 20px;
+    display: flex;
+}
+
+.article-cont {
+    width: 90%;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: left;
+    color: #0247FE;
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 2px solid #0247FE;
+    padding-bottom: 10px;
+}
+
+/* Estilos de los filtros */
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 400px; /* Ajusta según necesidad */
+    margin: 20px auto;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.filter-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.filter-group select {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.filter-btn {
+    color: #007bff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.filter-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos de los artículos */
+.article-list {
+    width: 90%;
+    margin: auto;
+    padding: 20px;
+}
+
+.article-card {
+    background-color: #D7EBFF;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 15px;
+    border: 2px solid #0247FE;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.article-image img {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    border: 2px solid #0247FE;
+}
+
+.article-content {
+    flex: 1;
+}
+
+.article-content #card-title {
+    color: #0247FE;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.article-content p {
+    margin: 5px 0;
+}
+
+.article-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-info img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+.favorite-icon {
+    color: #0247FE;
+    font-size: 20px;
+    cursor: pointer;
+}
