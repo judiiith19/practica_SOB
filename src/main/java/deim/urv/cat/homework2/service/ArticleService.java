@@ -6,7 +6,6 @@ package deim.urv.cat.homework2.service;
 
 import deim.urv.cat.homework2.model.ArticleSimpleDTO;
 import deim.urv.cat.homework2.model.ArticleDetailedDTO;
-import jakarta.ws.rs.core.HttpHeaders;
 import java.util.List;
 
 /**
@@ -15,5 +14,5 @@ import java.util.List;
  */
 public interface ArticleService {
     public List<ArticleSimpleDTO> findArticles (List<String> topics, String author);
-    public ArticleDetailedDTO findArticleById (Long id, HttpHeaders headers);
+    public ArticleDetailedDTO findArticleById (Long id, String username, String password);
 }

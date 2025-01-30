@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,14 +71,25 @@ public class ArticleServiceImpl implements ArticleService{
      * Obtiene un artículo por su ID.
      * 
      * @param id ID del artículo.
-     * @param headers Cabeceras HTTP.
+     * @param username
+     * @param password
      * @return El artículo encontrado o null si no existe.
      */
     @Override
-    public ArticleDetailedDTO findArticleById(Long id, HttpHeaders headers){
+    public ArticleDetailedDTO findArticleById(Long id, String username, String password){
+        // Autenticar al usuario antes de solicitar el artículo
+        Customer authenticatedUser = authenticateUser(username, password);
+        if (authenticatedUser == null) {
+            LOGGER.log(Level.WARNING, "No se pudo autenticar al usuario: {0}", username);
+            return null;
+        }
+
+        // Si la autenticación fue exitosa, proceder con la petición del artículo
+        String authHeader = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+
         try (Response response = webTarget.path("/"+String.valueOf(id))
                 .request(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, headers)
+                .header(HttpHeaders.AUTHORIZATION, authHeader)
                 .get()) {
             if (response.getStatus() == Response.Status.OK.getStatusCode()) {
                 return response.readEntity(ArticleDetailedDTO.class);
@@ -95,5 +107,29 @@ public class ArticleServiceImpl implements ArticleService{
      */
     public void close() {
         client.close();
+    }
+    
+    /**
+     * Método auxiliar para autenticar al usuario usando HTTP Basic Auth.
+    */
+    private Customer authenticateUser(String username, String password) {
+        // Codificar credenciales en Base64 para HTTP Basic Auth
+        String authHeader = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+
+        try (Response response = webTarget.request(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, authHeader)
+                .get()) {
+
+            if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+                return response.readEntity(Customer.class);
+            } else if (response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()
+                    || response.getStatus() == Response.Status.FORBIDDEN.getStatusCode()){
+                LOGGER.log(Level.WARNING, "Authentication failed for user: {0}. Response code: {1}", 
+                        new Object[]{username, response.getStatus()});
+            } else {
+                LOGGER.log(Level.SEVERE, "Error during authentication for user: " + username, response.getStatus());
+            }
+            return null;
+        }
     }
 }
