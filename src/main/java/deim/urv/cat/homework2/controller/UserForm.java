@@ -1,6 +1,6 @@
 package deim.urv.cat.homework2.controller;
 
-import deim.urv.cat.homework2.model.Customer;
+import deim.urv.cat.homework2.model.CustomerDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 import jakarta.mvc.binding.MvcBinding;
@@ -16,7 +16,7 @@ import java.util.List;
 public class UserForm implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private List<Customer> customers = new ArrayList<>();
+    private List<CustomerDTO> customers = new ArrayList<>();
         
     @FormParam("id")
     @MvcBinding
@@ -25,13 +25,13 @@ public class UserForm implements Serializable {
     @NotBlank
     @FormParam("username")
     @MvcBinding
-    @Size(min=2, max=30, message = "Username must be between 2 and 30 characters")
+    @Size(min=2, max=25, message = "Username must be between 2 and 25 characters")
     private String username;
     
     @NotBlank
     @FormParam("password")
     @MvcBinding
-    @Size(min=2, max=30, message = "Password must be between 2 and 30 characters")
+    @Size(min=6, max=10, message = "Password must be between 6 and 10 characters")
     private String password;
     
     public Long getId() { return this.id; }
@@ -43,8 +43,10 @@ public class UserForm implements Serializable {
     public String getPassword() { return fixNull(this.password); }
     public void setPassword(String password) { this.password = password; }
     
-    public List<Customer> getCustomers() { return customers; }
-    public void setCustomers(List<Customer> customers) { this.customers = customers; }
+    public List<CustomerDTO> getCustomers() { return customers; }
+    public void setCustomers(List<CustomerDTO> customers) { this.customers = customers; }
 
     private String fixNull(String in) { return (in == null) ? "" : in; }
+    
+    public void addCustomer(CustomerDTO customer) { this.customers.add(customer); }
 }

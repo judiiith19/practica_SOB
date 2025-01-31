@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Blog - Artículos</title>
     <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet" >
-    <link href="<c:url value="/resources/css/style.css" />" rel="stylesheet">
+    <link href="<c:url value="/resources/css/style-main.css" />" rel="stylesheet">
     <script src="scripts.js" defer></script>
 </head>
 <body>
@@ -33,16 +33,18 @@
                             </c:forEach>
                         </select>
                     </div>
-                    <button type="submit" class="filter-btn">Filtrar</button>     
+                    <button type="submit" class="button">Filtrar</button>     
                 </form>
             </div>
-            <button class="button">L o g  I n</button>
+            <div class="log-btn-cont">
+                <button class="button" onClick="redirectToSignUp()">L o g  I n</button>
+            </div>
         </header>
         <!-- Lista de artículos -->
         <h2 class="article-title">Lista de Artículos</h2>
         <div class="article-list">
             <c:forEach var="article" items="${articleSimpleForm.articles}">
-                <div class="article-card">
+                <article class="article-card" onClick="redirectToArticle(${article.id}, ${article.isPublic})">
                     <div>
                         <!--<img src="{article.imageUrl}" class="article-img" alt="Imagen del artículo"> -->
                     </div>
@@ -50,16 +52,42 @@
                         <p class="card-title">${article.title}</p>
                         <p class="card-text">${article.summary}</p>
                         <div class="article-meta">
-                            <span>${article.publishedDate} | ${article.views}</span>
+                            <span class="card-text">${article.publishedDate} | ${article.views}</span>
+                            <span class="article-user">
+                                <!--<img src="user-placeholder.jpg" alt="Usuario" class="user-avatar">-->
+                                <span class="card-text">${article.author}</span>
+                            </span>
                         </div>
                     </div>
-                    <div class="article-user">
-                        <!--<img src="user-placeholder.jpg" alt="Usuario" class="user-avatar">-->
-                        <span>${article.author}</span>
-                    </div>
-                </div>
+                </article>
             </c:forEach>
         </div>
     </div>
+    <script>
+        function redirectToSignUp() {
+            // Redirigir a otro archivo HTML
+            window.location.href = "${mvc.uri('sign-up')}";
+        }
+    </script>
+    <script>
+        function redirectToArticle(articleId, isPublic) {
+            const isRegistered = <c:out value="${not empty sessionScope.user}" />; // Verifica si el usuario está loggeado
+
+            if (isPublic) {
+                if (isRegistered) {
+                    // Redirige al artículo detallado si es privado y el usuario está logueado
+                    var url = "${mvc.uri('showDetailedArticle')}" + "?param=" + encodeURIComponent(articleId);
+                    window.location.href = url;
+                } else {
+                    // Redirige a la página de login si no está logueado
+                    window.location.href = 'SignUp';
+                }
+            } else {
+                // Redirige al artículo detallado si no es privado
+                var url = "${mvc.uri('showDetailedArticle')}" + "?param=" + encodeURIComponent(articleId);
+                window.location.href = url;
+            }
+        }
+    </script>
 </body>
 </html>

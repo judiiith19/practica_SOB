@@ -10,6 +10,7 @@ import deim.urv.cat.homework2.service.ArticleService;
 import jakarta.inject.Inject;
 import jakarta.mvc.Controller;
 import jakarta.mvc.Models;
+import jakarta.mvc.UriRef;
 import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -36,6 +37,7 @@ public class DetailedArticlePageController {
     private HttpSession session;
     
     @GET
+    @UriRef("showDetailedArticle")
     public String showDetailedArticle(@QueryParam("id") Long id){
         Customer customer = (Customer) this.session.getAttribute("user");
         String username = (customer != null) ? customer.getCredentials().getUsername() : "";

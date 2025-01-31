@@ -13,6 +13,8 @@ import java.util.List;
  * @author JUDITH
  */
 public class ArticleSimpleDTO implements Serializable {
+    private Long id;
+    private Boolean isPublic;
     private String title;
     private String author;
     private String summary;
@@ -20,6 +22,12 @@ public class ArticleSimpleDTO implements Serializable {
     private Integer views;
     private String imageUrl;
     private List<Topic> topics;
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public Boolean getIsPublic() { return isPublic; }
+    public void setIsPublic(Boolean isPublic) { this.isPublic = isPublic; }
     
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
