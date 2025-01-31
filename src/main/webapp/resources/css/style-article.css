@@ -1,0 +1,138 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.top-div{
+    background-color: #87cefa;
+    padding: 20px;
+    display: flex;
+}
+
+.article-cont {
+    width: 90%;
+    margin: auto;
+    padding: 20px;
+}
+
+h2 {
+    text-align: left;
+    color: #0247FE;
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 2px solid #0247FE;
+    padding-bottom: 10px;
+}
+
+/* Estilos de los filtros */
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    margin: 10px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+    width: 100%;
+}
+
+.filter-group label {
+    font-weight: bold;
+    color: #d7ebff;
+    margin-bottom: 5px;
+}
+
+.filter-group select {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.log-btn-cont {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+.button {
+    color: #d7ebff;
+    background-color:#2e6da4;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.button:hover {
+    color: #2e6da4;
+    background-color:#d7ebff;
+}
+
+/* Estilos de los artículos */
+.article-list {
+    width: 90%;
+    margin: auto;
+    padding: 20px;
+}
+
+.article-card {
+    background-color: #e0f9ff;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 15px;
+    border: 2px solid #98aee8;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.article-image img {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    border: 2px solid #0247FE;
+}
+
+.article-content {
+    flex: 1;
+}
+
+.card-title {
+    color: #2e6da4;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.card-text {
+    color: #679bc5;
+    font-size: 14px;
+    margin-left: 30px;
+}
+
+.author {
+    color: #679bc5;
+    font-size: 14px;
+}
+
+.article-content p {
+    margin: 5px 0;
+}
+
+.article-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.favorite-icon {
+    color: #0247FE;
+    font-size: 20px;
+    cursor: pointer;
+}
